@@ -1,0 +1,12 @@
+[project]
+name = "resnet18-n2uq"
+version = "0.1.0"
+description = "N2UQ quantized ResNet inference with PyTorch"
+requires-python = ">=3.9"
+dependencies = [
+    "torch",
+    "torchvision",
+    "jupyterlab",
+    "numpy",
+    "matplotlib",
+]
