@@ -99,16 +99,15 @@ integer weights — this is the correctness floor.
 
 ## Migration Steps
 
-1. Rewrite the notebook with the new section structure
-2. Keep all model definition cells unchanged
-3. Fix emulator activation quantization and scaling
-4. Add per-layer conv comparison section
-5. Update full-model forward pass with correct scaling
-6. Update visualization to include TLMAC
-7. Update summary table
+1. ✅ SA injection: enforce per-cluster injection in init + swap move
+2. ✅ Per-step routing: export route_map[D_s, D_p] from compile, load in emulator
+3. ✅ Bias correction: add -sf·(WOFFSET/n - clip/2)·conv(x,ones) to forward_scaled
+4. ❌ Re-run compile on Colab (re-generates hex files with new routing)
+5. ❌ Re-run test_accuracy on Colab (verifies accuracy fix)
 
 ## Open Questions
 
 - Should we add ImageNet evaluation? (Needs ImageNet data on Colab)
 - Should the per-layer comparison use random input or real LTQ output?
   → Real LTQ output, to match actual inference conditions
+- **TLMAC paper description**: see `docs/TLMAC_ARCHITECTURE.md`

@@ -231,17 +231,25 @@ that drives that output at that step. This matches the paper's
 
 ## Severity & Fix Order
 
-| # | Issue | Severity | Effect | Fix Location |
+| # | Issue | Severity | Status | Fix Location |
 |---|-------|----------|--------|--------------|
-| 1 | Static routing | CRITICAL | Uncorrelated output (r≈0) | compile + emulator |
-| 3 | SA collisions | MAJOR | Lost weight groups | compile (SA) |
-| 2 | Missing bias | SIGNIFICANT | ~28% magnitude error | emulator |
-| 4 | routing_bitmap format | MINOR | Root cause of #1 | compile |
+| 3 | SA collisions | MAJOR | ✅ FIXED | compile (SA) |
+| 1 | Static routing | CRITICAL | ✅ FIXED | compile + emulator |
+| 4 | routing_bitmap format | MINOR | ✅ FIXED | compile (export) |
+| 2 | Missing bias | SIGNIFICANT | ✅ FIXED | emulator |
 
-**Fix order**: Issue 3 (SA) → Issue 1/4 (routing export + emulator) →
-Issue 2 (bias). Issue 3 must be fixed first because collisions corrupt
-the placement, making the per-step routing map wrong even if exported
-correctly.
+**Fix order applied**: Issue 3 (SA) → Issue 1/4 (routing export + emulator) →
+Issue 2 (bias). All four fixes applied in `tlmac_compile.ipynb` and
+`test_accuracy.ipynb`. Needs re-run on Colab to verify.
+
+### What each fix does
+
+1. **SA injection** (compile): Initial assignment uses `randperm` (injection),
+   swap move exchanges one group from e0 with one from e1 (preserves injection).
+2. **Per-step routing** (compile + emulator): Export `route_map[D_s, D_p]`
+   from compile. Emulator loads 2D map, uses `routed_table[s, :, addr]`.
+3. **Bias correction** (emulator): `y = sf/(n*n_q)*psum + bias*conv(x,ones)`
+   where `bias = sf*(WOFFSET/n - clip/2) = sf*(3/3.5-1) = -sf/7`.
 
 ## What is CORRECT (verified)
 
